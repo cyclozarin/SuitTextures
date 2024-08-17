@@ -1,0 +1,38 @@
+[config]
+schemaVersion = "0.0.1"
+
+[general]
+repository = "https://thunderstore.io"
+
+[package]
+namespace = "cyclozarin"
+name = "SuitTextures"
+description = "A mod for Content Warning that adds various textures to set on your suit"
+websiteUrl = "https://github.com/cyclozarin/SuitTextures"
+containsNsfwContent = false
+[package.dependencies]
+BepInEx-BepInExPack = "5.4.2100"
+Hamunii-AutoHookGenPatcher = "1.0.2"
+
+[build]
+icon = "icon.png"
+readme = "../../README.md"
+outdir = "../dist"
+
+[[build.copy]]
+source = "../bin/Release/netstandard2.1/cyclozarin.contentwarning.SuitTextures.dll"
+target = "/BepInEx/plugins/SuitTextures/"
+
+[[build.copy]]
+source = "../../CHANGELOG.md"
+target = "/"
+
+[[build.copy]]
+source = "../../LICENSE.txt"
+target = "/"
+
+[publish]
+communities = [ "content-warning" ]
+[publish.categories]
+content-warning = [ "mods", "vanillacomp", "clientside", "misc" ]
+# For a list of valid tags, look at the slug values in https://thunderstore.io/api/experimental/community/content-warning/category/
