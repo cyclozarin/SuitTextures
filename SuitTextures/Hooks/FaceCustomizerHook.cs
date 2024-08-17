@@ -7,6 +7,8 @@ namespace SuitTextures.Hooks
 {
     internal class FaceCustomizerHook
     {
+        private static PlayerCustomizer _playerCustomizer = null!;
+
         internal static void Init()
         {
             On.SurfaceNetworkHandler.InitSurface += MMHook_Postfix_SpawnSkinChangeButtons;
@@ -17,7 +19,7 @@ namespace SuitTextures.Hooks
             orig(self);
 
             Transform _canvasTransform = GameObject.Find("Tools/PlayerCustomizerMachine/WhyDoesThisObjectExist/WorldSpace").transform;
-            PlayerCustomizer _playerCustomizer = GameObject.Find("Tools/PlayerCustomizerMachine").GetComponent<PlayerCustomizer>();
+            _playerCustomizer = GameObject.Find("Tools/PlayerCustomizerMachine").GetComponent<PlayerCustomizer>();
             GameObject _pasteButton = _playerCustomizer.pastButton.transform.parent.gameObject;
 
             _pasteButton.GetComponent<RectTransform>().localPosition = _pasteButton.GetComponent<RectTransform>().localPosition with { y = -190 };
@@ -50,6 +52,16 @@ namespace SuitTextures.Hooks
             _resetSkinButtonText.text = "RESET SKIN";
 
             Plugin.SetSkinTextureTextMesh(_skinTextureName);
+        }
+
+        internal static void PlayChooseSound()
+        {
+            _playerCustomizer.clickSound.Play(_playerCustomizer.transform.position);
+        }
+
+        internal static void PlayResetSound()
+        {
+            _playerCustomizer.backSound.Play(_playerCustomizer.transform.position);
         }
     }
 }

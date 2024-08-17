@@ -156,6 +156,7 @@ namespace SuitTextures
             CurrentSuitTextureIndex++;
             CurrentSuitTextureIndex = Mathf.Clamp(CurrentSuitTextureIndex, -1, Skins.Count - 1);
             ChangeSkinTextureText();
+            FaceCustomizerHook.PlayChooseSound();
             ApplySuitTexture(Skins[CurrentSuitTextureIndex].name);
         }
 
@@ -164,6 +165,7 @@ namespace SuitTextures
             CurrentSuitTextureIndex--;
             CurrentSuitTextureIndex = Mathf.Clamp(CurrentSuitTextureIndex, -1, Skins.Count - 1);
             ChangeSkinTextureText();
+            FaceCustomizerHook.PlayChooseSound();
             if (CurrentSuitTextureIndex == -1)
             {
                 ApplySuitTexture(null, true);
@@ -176,6 +178,7 @@ namespace SuitTextures
         {
             CurrentSuitTextureIndex = -1;
             ChangeSkinTextureText();
+            FaceCustomizerHook.PlayResetSound();
             ApplySuitTexture(null, true);
         }
 
