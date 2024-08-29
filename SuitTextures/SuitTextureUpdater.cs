@@ -8,17 +8,19 @@ namespace SuitTextures
     {
         public void OnPlayerPropertiesUpdate(Photon.Realtime.Player targetPlayer, Hashtable changedProps)
         {
-            Plugin.Logger.LogDebug($"targetPlayer: {targetPlayer.NickName} changedProps: {changedProps}");
-            string _changedSuitTexture = null!;
-            if (changedProps.ContainsKey("Suit texture"))
-            {
-                _changedSuitTexture = (string)changedProps["Suit texture"];
-            }
-            else return;
             if (!targetPlayer.IsLocal)
             {
+                string _changedSuitTexture = null!;
+                if (changedProps.ContainsKey("Suit texture"))
+                {
+                    _changedSuitTexture = (string)changedProps["Suit texture"];
+                }
                 Player _cwPlayer = PlayerHandler.instance.players.First((player) => player.photonView.Owner == targetPlayer);
-                Plugin.ApplySuitTexture(_cwPlayer, _changedSuitTexture);
+                if (_changedSuitTexture != "Default")
+                    Plugin.ApplySuitTexture(_cwPlayer, _changedSuitTexture);
+                else
+                    Plugin.ApplySuitTexture(_cwPlayer, _changedSuitTexture, true);
+                Plugin.Logger.LogDebug($"targetPlayer: {targetPlayer.NickName} changedProps: {changedProps}");
             }
         }
 

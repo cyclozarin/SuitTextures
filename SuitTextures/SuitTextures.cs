@@ -94,7 +94,7 @@ namespace SuitTextures
             On.PlayerVisor.Update += (orig, self) =>
             {
                 orig(self);
-                if ((string)self.m_player.photonView.Owner.CustomProperties["Suit texture"] != "Default")
+                if (self.m_player.photonView.Owner.CustomProperties.ContainsKey("Suit texture") && (string)self.m_player.photonView.Owner.CustomProperties["Suit texture"] != "Default")
                 {
                     SkinnedMeshRenderer[] componentsInChildren = self.transform.GetChild(1).GetComponentsInChildren<SkinnedMeshRenderer>();
                     for (int i = 0; i < componentsInChildren.Length; i++)

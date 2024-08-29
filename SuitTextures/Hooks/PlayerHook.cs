@@ -18,9 +18,9 @@ namespace SuitTextures.Hooks
             while (_orig.MoveNext())
                 yield return _orig.Current;
 
-            string _currentSuitTextureString = PlayerPrefs.GetString("SuitTexture");
             if (self.IsLocal)
             {
+                string _currentSuitTextureString = PlayerPrefs.GetString("SuitTexture");
                 bool _defaultSkin = _currentSuitTextureString == "Default" || _currentSuitTextureString == null;
                 if (_defaultSkin)
                     Plugin.ApplySuitTexture(Player.localPlayer, "Default", true);
