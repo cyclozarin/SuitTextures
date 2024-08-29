@@ -1,12 +1,15 @@
 global using Plugin = SuitTextures.SuitTextures;
 using BepInEx;
 using BepInEx.Logging;
+using Photon.Pun;
 using SuitTextures.Hooks;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using TMPro;
 using UnityEngine;
+using BepInEx.Configuration;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 namespace SuitTextures
 {
@@ -62,6 +65,8 @@ namespace SuitTextures
 
             HookAll();
 
+            PhotonNetwork.AddCallbackTarget(new SuitTextureUpdater());
+
             Logger.LogInfo($"{MyPluginInfo.PLUGIN_NAME} by {MyPluginInfo.PLUGIN_GUID.Split(".")[0]} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
         }
 
@@ -89,7 +94,7 @@ namespace SuitTextures
             On.PlayerVisor.Update += (orig, self) =>
             {
                 orig(self);
-                if (CurrentSuitTextureIndex != -1)
+                if ((string)self.m_player.photonView.Owner.CustomProperties["Suit texture"] != "Default")
                 {
                     SkinnedMeshRenderer[] componentsInChildren = self.transform.GetChild(1).GetComponentsInChildren<SkinnedMeshRenderer>();
                     for (int i = 0; i < componentsInChildren.Length; i++)
@@ -108,8 +113,12 @@ namespace SuitTextures
 
             material.color = Color.white;
 
-            material.SetTexture("_ExtraTexture", texture);
-            material.SetTextureScale("_ExtraTexture", SkinsScales[texture.name]);
+            try
+            {
+                material.SetTexture("_ExtraTexture", texture);
+                material.SetTextureScale("_ExtraTexture", SkinsScales[texture.name]);
+            }
+            catch { }
         }
 
         internal static void ResetMaterialTextureAndChangeColor(Material material, Color color)
@@ -119,12 +128,18 @@ namespace SuitTextures
             material.color = color;
         }
 
-        internal static void ApplySuitTexture(string texture, bool reset = false)
+        internal static void ApplySuitTexture(Player player, string texture, bool reset = false)
         {
-            Transform _playerTransform = Player.localPlayer.gameObject.transform.GetChild(1);
+            Transform _playerTransform = player.gameObject.transform.GetChild(1);
 
             var _headRenderer = _playerTransform.GetChild(1).gameObject.GetComponent<SkinnedMeshRenderer>();
             var _bodyRenderer = _playerTransform.GetChild(3).gameObject.GetComponent<SkinnedMeshRenderer>();
+
+            if (player == Player.localPlayer)
+            {
+                ApplySuitTextureInProperties(player.photonView.Owner, texture);
+                PlayerPrefs.SetString("SuitTexture", texture);
+            }
 
             if (reset)
             {
@@ -140,15 +155,28 @@ namespace SuitTextures
                 return;
             }
 
-            Texture2D _currentTexture = Skins.First((t) => t.name == texture);
+            Texture2D _currentTexture = null!;
+            try
+            {
+               _currentTexture = Skins.First((t) => t.name == texture);
+            }
+            catch { }
 
             ChangeMaterialTexture(_headRenderer.materials[0], _currentTexture);
             ChangeMaterialTexture(_headRenderer.materials[1], _currentTexture);
 
             ChangeMaterialTexture(_bodyRenderer.materials[0], _currentTexture);
             ChangeMaterialTexture(_bodyRenderer.materials[1], _currentTexture);
+        }
 
-            PlayerPrefs.SetString("SuitTexture", texture);
+        internal static void ApplySuitTextureInProperties(Photon.Realtime.Player player, string texture)
+        {
+            Hashtable _playerProperties = player.CustomProperties;
+            if (_playerProperties.ContainsKey("Suit texture"))
+                _playerProperties["Suit texture"] = texture;
+            else
+                _playerProperties.Add("Suit texture", texture ?? "Default");
+            player.SetCustomProperties(_playerProperties);
         }
 
         internal static void NextSkin()
@@ -157,7 +185,7 @@ namespace SuitTextures
             CurrentSuitTextureIndex = Mathf.Clamp(CurrentSuitTextureIndex, -1, Skins.Count - 1);
             ChangeSkinTextureText();
             FaceCustomizerHook.PlayChooseSound();
-            ApplySuitTexture(Skins[CurrentSuitTextureIndex].name);
+            ApplySuitTexture(Player.localPlayer, Skins[CurrentSuitTextureIndex].name);
         }
 
         internal static void PreviousSkin()
@@ -168,10 +196,10 @@ namespace SuitTextures
             FaceCustomizerHook.PlayChooseSound();
             if (CurrentSuitTextureIndex == -1)
             {
-                ApplySuitTexture(null, true);
+                ApplySuitTexture(Player.localPlayer, "Default", true);
                 return;
             }
-            ApplySuitTexture(Skins[CurrentSuitTextureIndex].name);
+            ApplySuitTexture(Player.localPlayer, Skins[CurrentSuitTextureIndex].name);
         }
 
         internal static void ResetSkin()
@@ -179,7 +207,7 @@ namespace SuitTextures
             CurrentSuitTextureIndex = -1;
             ChangeSkinTextureText();
             FaceCustomizerHook.PlayResetSound();
-            ApplySuitTexture(null, true);
+            ApplySuitTexture(Player.localPlayer, "Default", true);
         }
 
         internal static void SetSkinTextureTextMesh(TextMeshProUGUI textMesh)
