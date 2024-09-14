@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <!-- BepInEx Properties -->
     <PropertyGroup>
         <AssemblyName>cyclozarin.contentwarning.SuitTextures</AssemblyName>
@@ -65,7 +65,7 @@
         <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" PrivateAssets="all" />
         <PackageReference Include="UnityEngine.Modules" Version="2022.3.10" PrivateAssets="all" />
         <PackageReference Include="ContentWarning.GameLibs.Steam" Version="*-*" Publicize="true" PrivateAssets="all" />
-        <PackageReference Include="MinVer" Version="4.*" PrivateAssets="all" />
+        <PackageReference Include="MinVer" Version="6.0.0" PrivateAssets="all" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
@@ -75,7 +75,13 @@
     <!-- References - HookGen Assemblies -->
     <ItemGroup>
         <Reference Include="$(MMHOOKManaged)MMHOOK_Assembly-CSharp.dll" />
-    </ItemGroup>
+        <Reference Include="MMHOOK_UCustomPrefabsAPI">
+          <HintPath>Embedded plugins\MMHOOK_UCustomPrefabsAPI.dll</HintPath>
+        </Reference>
+        <Reference Include="UCustomPrefabsAPI">
+          <HintPath>Assemblies\UCustomPrefabsAPI-publicized.dll</HintPath>
+        </Reference>
+	</ItemGroup>
 	
 	<Import Project="./SuitTextures.Packaging.targets" />
 </Project>

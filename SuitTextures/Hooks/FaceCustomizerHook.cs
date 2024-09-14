@@ -11,10 +11,10 @@ namespace SuitTextures.Hooks
 
         internal static void Init()
         {
-            On.SurfaceNetworkHandler.InitSurface += MMHook_Postfix_SpawnSkinChangeButtons;
+            On.PlayerCustomizer.Awake += MMHook_Postfix_SpawnSkinChangeButtons;
         }
 
-        private static void MMHook_Postfix_SpawnSkinChangeButtons(On.SurfaceNetworkHandler.orig_InitSurface orig, SurfaceNetworkHandler self)
+        private static void MMHook_Postfix_SpawnSkinChangeButtons(On.PlayerCustomizer.orig_Awake orig, PlayerCustomizer self)
         {
             orig(self);
 
